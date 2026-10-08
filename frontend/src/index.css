@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+/* ── STEWARD design tokens ─────────────────────────────────── */
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-canvas: #faf8f4;      /* warm off-white page background */
+  --color-surface: #ffffff;
+  --color-ink: #1b1b18;         /* primary text */
+  --color-ink-soft: #4a4943;
+  --color-muted: #7a786f;       /* secondary text */
+  --color-line: #ebe7df;        /* borders, dividers */
+  --color-line-strong: #d9d4c9;
+
+  --color-brand-50: #f0f9f1;
+  --color-brand-100: #dcf1df;
+  --color-brand-500: #1f9d3e;
+  --color-brand-600: #168a34;
+  --color-brand-700: #12722b;
+  --color-brand-800: #105c25;
+
+  --color-veg: #168a34;
+  --color-nonveg: #c2342b;
+  --color-warn: #b45309;
+
+  --radius-card: 1rem;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-fade-up: fade-up 0.45s var(--ease-out-soft) both;
+  --animate-fade-in: fade-in 0.3s ease-out both;
+  --animate-scale-in: scale-in 0.22s var(--ease-out-soft) both;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+
+  /* Ends at `transform: none` so animated containers don't become the
+     containing block for position:fixed children (e.g. the cart bar). */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes shimmer {
+    from { background-position: -400px 0; }
+    to { background-position: 400px 0; }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-canvas text-ink font-sans;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-600;
+  }
+  ::selection {
+    @apply bg-brand-100;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .skeleton {
+    background: linear-gradient(90deg, #f0ede6 0%, #f8f6f1 40%, #f0ede6 80%);
+    background-size: 800px 100%;
+    @apply animate-shimmer rounded-lg;
+  }
+}
+
+/* Steam rising from the bowl in the "Preparing your order…" overlay */
+@keyframes steam-rise {
+  0% { opacity: 0; transform: translateY(6px); }
+  40% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+.steam {
+  animation: steam-rise 1.8s ease-in-out infinite both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

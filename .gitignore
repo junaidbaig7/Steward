@@ -1,0 +1,29 @@
+# Secrets — never commit
+.env
+.env.local
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Embedding model cache
+.cache/
+models_cache/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Personal Claude Code settings
+.claude/settings.local.json

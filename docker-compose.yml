@@ -1,0 +1,73 @@
+# STEWARD — application services in Docker.
+#
+# PostgreSQL (steward_db + pgvector), MongoDB and Redis run on the HOST machine
+# (they are already installed locally), so containers reach them through
+# host.docker.internal instead of starting duplicate database containers.
+#
+#   docker compose up --build
+#   → frontend  http://localhost:5173
+#   → gateway   http://localhost:8000/api/health
+
+x-backend-env: &backend-env
+  env_file: .env
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  restart: unless-stopped
+
+x-host-datastores: &host-datastores
+  POSTGRES_HOST: host.docker.internal
+  MONGODB_URL: mongodb://host.docker.internal:27017
+  REDIS_URL: redis://host.docker.internal:6379/0
+  USER_SERVICE_URL: http://user-service:8001
+  RESTAURANT_SERVICE_URL: http://restaurant-service:8002
+  ORDER_SERVICE_URL: http://order-service:8003
+
+services:
+  user-service:
+    <<: *backend-env
+    build:
+      context: ./backend
+      dockerfile: user_service/Dockerfile
+    environment: *host-datastores
+    expose: ["8001"]
+
+  restaurant-service:
+    <<: *backend-env
+    build:
+      context: ./backend
+      dockerfile: restaurant_service/Dockerfile
+    environment: *host-datastores
+    expose: ["8002"]
+
+  order-service:
+    <<: *backend-env
+    build:
+      context: ./backend
+      dockerfile: order_service/Dockerfile
+    environment: *host-datastores
+    expose: ["8003"]
+
+  gateway:
+    <<: *backend-env
+    build:
+      context: ./backend
+      dockerfile: gateway/Dockerfile
+    environment: *host-datastores
+    ports:
+      - "8000:8000"
+    depends_on:
+      - user-service
+      - restaurant-service
+      - order-service
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000/api
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
+    ports:
+      - "5173:80"
+    depends_on:
+      - gateway
+    restart: unless-stopped

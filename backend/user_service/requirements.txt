@@ -1,0 +1,12 @@
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic-settings>=2.4
+email-validator>=2.1
+pyjwt>=2.9
+sqlalchemy>=2.0.30
+psycopg[binary]>=3.2
+redis>=5.0
+pymongo>=4.8
+bcrypt>=4.1
+google-auth>=2.30
+requests>=2.32

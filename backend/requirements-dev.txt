@@ -1,0 +1,9 @@
+# Local development: every service's dependencies in one virtualenv, plus test tools.
+#   python3.12 -m venv backend/.venv
+#   cd backend && .venv/bin/pip install -r requirements-dev.txt   (run from backend/)
+-e ./common
+-r gateway/requirements.txt
+-r user_service/requirements.txt
+-r restaurant_service/requirements.txt
+-r order_service/requirements.txt
+pytest>=8
