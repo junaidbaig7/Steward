@@ -2,6 +2,7 @@
 
 Keys (all prefixed `steward:`):
   otp:{phone}           hashed OTP, expires after OTP_TTL_SECONDS (TTL = expiry)
+                        (plain 6-digit code instead, if OTP_PLAINTEXT_IN_REDIS is on in development)
   otp:attempts:{phone}  wrong-guess counter, same TTL; 5 strikes invalidates the code
   otp:cooldown:{phone}  exists for 30 s after sending — blocks rapid resends
   otp:hourly:{phone}    sends in the last hour — max 5
@@ -20,10 +21,17 @@ RESEND_COOLDOWN_SECONDS = 30
 MAX_SENDS_PER_HOUR = 5
 
 
-def _hash(phone: str, otp: str) -> str:
-    # Store only an HMAC of the code, so a Redis dump does not reveal live OTPs.
-    secret = get_settings().jwt_secret.encode()
-    return hmac.new(secret, f"{phone}:{otp}".encode(), hashlib.sha256).hexdigest()
+def _stored_value(phone: str, otp: str) -> str:
+    """What goes into Redis for this code.
+
+    Default: an HMAC of the code, so a Redis dump does not reveal live OTPs.
+    DEMO MODE (development only): the plain code, so `GET steward:otp:{phone}` in
+    redis-cli shows the 6 digits during a classroom demonstration.
+    """
+    settings = get_settings()
+    if settings.otp_plaintext_enabled:
+        return otp
+    return hmac.new(settings.jwt_secret.encode(), f"{phone}:{otp}".encode(), hashlib.sha256).hexdigest()
 
 
 def issue_otp(phone: str) -> str:
@@ -45,7 +53,7 @@ def issue_otp(phone: str) -> str:
     otp = f"{secrets.randbelow(1_000_000):06d}"
     # Pipeline = one round trip; SET ... EX sets the value and its TTL atomically.
     pipe = r.pipeline()
-    pipe.set(key("otp", phone), _hash(phone, otp), ex=ttl)
+    pipe.set(key("otp", phone), _stored_value(phone, otp), ex=ttl)
     pipe.delete(key("otp", "attempts", phone))
     pipe.set(key("otp", "cooldown", phone), 1, ex=RESEND_COOLDOWN_SECONDS)
     pipe.execute()
@@ -60,7 +68,7 @@ def verify_otp(phone: str, otp: str) -> None:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "This code has expired. Please request a new one.")
 
     attempts_key = key("otp", "attempts", phone)
-    if not hmac.compare_digest(stored, _hash(phone, otp)):
+    if not hmac.compare_digest(stored, _stored_value(phone, otp)):
         attempts = r.incr(attempts_key)
         r.expire(attempts_key, max(r.ttl(key("otp", phone)), 1))
         remaining = MAX_ATTEMPTS - attempts

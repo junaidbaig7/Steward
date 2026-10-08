@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 1440
     otp_ttl_seconds: int = 300
+    # Demo only: store OTPs unhashed in Redis so redis-cli can show them. Ignored outside development.
+    otp_plaintext_in_redis: bool = False
     internal_api_key: str = ""
 
     google_client_id: str = ""
@@ -65,6 +67,10 @@ class Settings(BaseSettings):
     @property
     def is_development(self) -> bool:
         return self.app_env.lower() == "development"
+
+    @property
+    def otp_plaintext_enabled(self) -> bool:
+        return self.otp_plaintext_in_redis and self.is_development
 
     @property
     def postgres_url(self):
