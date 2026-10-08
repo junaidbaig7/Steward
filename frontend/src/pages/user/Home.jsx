@@ -14,7 +14,7 @@ import { dishApi } from '../../services/api/dishApi'
 import { restaurantApi } from '../../services/api/restaurantApi'
 import { SEARCH_EXAMPLES } from '../../services/api/searchApi'
 
-const HERO_IMAGE = 'https://www.themealdb.com/images/media/meals/fqpqml1764359125.jpg/large'
+const HERO_IMAGE = 'https://www.themealdb.com/images/media/meals/qqlwv91763501559.jpg'
 
 /** Small hand-drawn squiggle, echoing the playful doodle in the design reference. */
 function Squiggle({ className }) {
@@ -75,13 +75,13 @@ function Hero() {
           <div className="relative mx-auto w-full max-w-[30rem]">
             <div className="absolute inset-[6%] rounded-full bg-brand-100/50 blur-3xl" aria-hidden />
             <div className="relative aspect-square overflow-hidden rounded-full border-[10px] border-surface shadow-[0_30px_70px_rgba(27,27,24,0.14)]">
-              <FoodImage src={HERO_IMAGE} alt="A bowl of pomegranate salad with herbs and cucumber" className="size-full scale-[1.12] object-cover" />
+              <FoodImage src={HERO_IMAGE} alt="A bowl of Malabar prawn curry with fresh coriander and lime" className="size-full scale-[1.08] object-cover" />
             </div>
             <div className="absolute -left-2 top-[12%] flex items-center gap-3 rounded-2xl border border-line bg-surface/95 px-4 py-3 shadow-[0_10px_30px_rgba(27,27,24,0.08)] backdrop-blur sm:-left-8">
-              <FoodTypeIcon type="VEG" />
+              <FoodTypeIcon type="NON_VEG" />
               <div>
-                <p className="text-sm font-semibold leading-tight text-ink">Pomegranate Salad</p>
-                <p className="text-xs text-muted">Green Bowl · ₹229</p>
+                <p className="text-sm font-semibold leading-tight text-ink">Malabar Prawn Curry</p>
+                <p className="text-xs text-muted">Coastal Curry Co. · ₹399</p>
               </div>
             </div>
             <div className="absolute -right-1 bottom-[10%] flex items-center gap-2.5 rounded-2xl border border-line bg-surface/95 px-4 py-3 shadow-[0_10px_30px_rgba(27,27,24,0.08)] backdrop-blur sm:-right-6">
@@ -89,7 +89,7 @@ function Hero() {
                 <Clock className="size-4" aria-hidden />
               </span>
               <div>
-                <p className="text-sm font-semibold leading-tight text-ink">25 min</p>
+                <p className="text-sm font-semibold leading-tight text-ink">40 min</p>
                 <p className="text-xs text-muted">to your door</p>
               </div>
             </div>
