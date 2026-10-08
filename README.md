@@ -128,6 +128,7 @@ Steward Project/
 │   ├── components/                ui/, food/, orders/, charts/, auth/, layout/
 │   ├── layouts/                   UserLayout, AdminLayout
 │   └── pages/user, pages/admin
+├── docs/                          ER diagram (PNG / SVG) and steward.dbml for dbdiagram.io
 ├── docker-compose.yml
 ├── .env.example
 └── README.md
